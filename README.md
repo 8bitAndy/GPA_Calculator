@@ -1,1 +1,3 @@
-# GPA_Calculator
+GPA Calculator
+
+first release, simple GUI
