@@ -1,3 +1,3 @@
 GPA Calculator
 
-first release, simple GUI
+second release, updated UI
