@@ -1,3 +1,3 @@
 GPA Calculator
 
-second release, updated UI
+0.5 release, updated UI
