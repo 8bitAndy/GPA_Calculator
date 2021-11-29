@@ -1,23 +1,24 @@
 """
 Grade Point Average Calculator by Liam Andrews
-Version: 0.4
-26/11/2021
+Version: 0.5
+29/11/2021
 
- - Next version: 0.45
+ - Next version: 0.55
 
 Need to change this new version to be more like the draft version, where it asks how many of each grade you have
 
 TODO:
 - Add settings tab
 - Add ability to save results
-- Change way program calculates GPA, change interface on main tab
-- Add tab for WAM
-- Add clear button for GPA tab
 
 
 WORKING ON CURRENTLY
-    - changing the way GPA is calculated
-    - change gpa tab layout
+    - NONE
+
+DONE
+    - Change way program calculates GPA, change interface on main tab
+    - Add tab for WAM
+    - Add clear button for GPA tab
 """
 
 import tkinter
@@ -68,47 +69,56 @@ class GPA_Calculator:
         self.entry5String = tkinter.StringVar()
 
         # Instructions for the user, displayed as a label with appropriate padding
-        instructionLabel = tkinter.Label(gpaTab, text='Enter the total units for each grade: ')
+        instructionLabel = tkinter.Label(gpaTab, text='Enter the total number of units for each grade: ')
         instructionLabel.pack(pady=10)
 
         # Result 1 label
         resultLabel1 = tkinter.Label(gpaTab, text='High Distinction: ')
         resultLabel1.pack()
         # Empty text box for entering data, justify right is used to make text appear centred
-        resultEntry1 = tkinter.Entry(gpaTab, textvariable=self.entry1String, justify='center')
-        resultEntry1.pack()
+        self.resultEntry1 = tkinter.Entry(gpaTab, textvariable=self.entry1String, justify='center')
+        self.resultEntry1.pack()
 
         # Result 2 label
         resultLabel2 = tkinter.Label(gpaTab, text='Distinction: ')
         resultLabel2.pack()
         # Empty text box for entering data, justify right is used to make text appear centred
-        resultEntry2 = tkinter.Entry(gpaTab, textvariable=self.entry2String, justify='center')
-        resultEntry2.pack()
+        self.resultEntry2 = tkinter.Entry(gpaTab, textvariable=self.entry2String, justify='center')
+        self.resultEntry2.pack()
 
         # Result 3 label
         resultLabel3 = tkinter.Label(gpaTab, text='Credit: ')
         resultLabel3.pack()
         # Empty text box for entering data, justify right is used to make text appear centred
-        resultEntry3 = tkinter.Entry(gpaTab, textvariable=self.entry3String, justify='center')
-        resultEntry3.pack()
+        self.resultEntry3 = tkinter.Entry(gpaTab, textvariable=self.entry3String, justify='center')
+        self.resultEntry3.pack()
 
         # Result 4 label
         resultLabel4 = tkinter.Label(gpaTab, text='Pass: ')
         resultLabel4.pack()
         # Empty text box for entering data, justify right is used to make text appear centred
-        resultEntry4 = tkinter.Entry(gpaTab, textvariable=self.entry4String, justify='center')
-        resultEntry4.pack()
+        self.resultEntry4 = tkinter.Entry(gpaTab, textvariable=self.entry4String, justify='center')
+        self.resultEntry4.pack()
 
         # Result 5 label
         resultLabel5 = tkinter.Label(gpaTab, text='Fail: ')
         resultLabel5.pack()
         # Empty text box for entering data, justify right is used to make text appear centred
-        resultEntry5 = tkinter.Entry(gpaTab, textvariable=self.entry5String, justify='center')
-        resultEntry5.pack()
+        self.resultEntry5 = tkinter.Entry(gpaTab, textvariable=self.entry5String, justify='center')
+        self.resultEntry5.pack()
 
-        # Button to calculate the GPA
-        calculateButton = tkinter.Button(gpaTab, text='Calculate results', command=self.calculateGPA)
-        calculateButton.pack(pady=10)
+
+        # Frame for calculate GPA button and clear button
+        buttonFrame = tkinter.Frame(gpaTab)
+        buttonFrame.pack(pady=15)
+
+        # Button to calculate the GPA, is packed into buttonFrame
+        calculateButton = tkinter.Button(buttonFrame, text='Calculate results', command=self.calculateGPA)
+        calculateButton.pack(side='left', padx=5)
+
+        # Button to clear all entry fields, is packed into buttonFrame
+        clearButton = tkinter.Button(buttonFrame, text='Clear', command=self.clearEntryFields)
+        clearButton.pack(side='right')
 
         # Contains the frame with the GPA result
         resultsFrame = tkinter.Frame(gpaTab)
@@ -122,20 +132,9 @@ class GPA_Calculator:
         self.gpaResult = tkinter.Label(gpaFrame, text='0')
         self.gpaResult.pack(side='right')
 
-        # Display the WAM within the results frame
-        wamFrame = tkinter.Frame(resultsFrame)
-        wamFrame.pack(side='right')
-        gpaLabel = tkinter.Label(wamFrame, text='Your WAM is: ')
-        gpaLabel.pack(side='left')
-        self.wamResult = tkinter.Label(wamFrame, text='0')
-        self.wamResult.pack(side='right')
-
         # Stats tab gpa label
         self.statsGPA = tkinter.Label(statsTab, text='0')
         self.statsGPA.pack()
-        # stats tab wam label
-        self.statsWAM = tkinter.Label(statsTab, text='0')
-        self.statsWAM.pack()
 
         """
         File handling tab
@@ -155,71 +154,68 @@ class GPA_Calculator:
     # Calculates and displays GPA via the GUI, once button is pressed
     def calculateGPA(self):
 
-        # Extract the input from all 5 entry boxes, converts all values to ints
-        hd_grades = int(self.entry1String.get())
-        d_grades = int(self.entry2String.get())
-        cr_grades = int(self.entry3String.get())
-        p_grades = int(self.entry4String.get())
-        fail_grades = int(self.entry5String.get())
+        # Extract the input from all 5 entry boxes, converts all values to ints.
+        # Exception handling deals with any empty entry fields, will assign a value of zero if no value is given.
+        try:
+            hd_grades = int(self.entry1String.get())
+        except ValueError:
+            hd_grades = 0
+
+        try:
+            d_grades = int(self.entry2String.get())
+        except ValueError:
+            d_grades = 0
+
+        try:
+            cr_grades = int(self.entry3String.get())
+        except ValueError:
+            cr_grades = 0
+
+        try:
+            p_grades = int(self.entry4String.get())
+        except ValueError:
+            p_grades = 0
+
+        try:
+            fail_grades = int(self.entry5String.get())
+        except ValueError:
+            fail_grades = 0
+
 
         # Calculate the total number units taken. Used in calculation for GPA
         unitTotal = hd_grades + d_grades + cr_grades + p_grades + fail_grades
 
 
-
-        # Create default value to print if no score recorded, create empty list for the grades to be entered into
+        # Create default value to print if no score recorded
         gpaScore = 0.0
-        # Weighted average mean
-        wamScore = 0.0
-        grades = []
-
-        # Append the 4 grades into a list
-        grades.append(float(self.entry1String.get()))
-        grades.append(float(self.entry2String.get()))
-        grades.append(float(self.entry3String.get()))
-        grades.append(float(self.entry4String.get()))
-
-        # Loop through each grade and get appropriate score
-        for grade in grades:
-
-            # Check grade and award appropriate points for them, HD = 4, D = 3.5, CR = 3, P = 2
-            # High Distinction
-            if grade >= 80:
-                point = 4
-            # Distinction
-            elif grade >= 70:
-                point = 3.5
-            # Credit
-            elif grade >= 60:
-                point = 3
-            # Pass
-            elif grade >= 50:
-                point = 2
-            # Fail
-            else:
-                point = 0
-
-            gpaScore += point * 15
-            wamScore += grade * 15
-
-        # Calculation for GPA
-        gpaScore = gpaScore / (15 * 4)
-
-        # Calculation for WAM
-        wamScore = wamScore / (15 * 4)
 
         gpaScore = 0
-        # Multiply amount of each grade by 15 points to get GPA, then divide by total amount of units
-        gpaScore = (((hd_grades * 4) * 15) + ((d_grades * 3.5) * 15) + ((cr_grades * 3) * 15) + ((p_grades * 2) * 15) + ((fail_grades * 0) * 15)) / (15 * unitTotal)
+
+
+        """
+            --- FORMULA TO CALCULATE GPA ---
+            Multiply amount of each grade by 15 points to get GPA, then divide by total amount of units.
+            Will only execute if a valid number of units has been entered. Doing this prevents the program
+            attempting to divide by zero or a negative number.
+        """
+        if unitTotal != 0 and unitTotal > 0:
+            gpaScore = (((hd_grades * 4) * 15) + ((d_grades * 3.5) * 15) + ((cr_grades * 3) * 15) + ((p_grades * 2) * 15) + ((fail_grades * 0) * 15)) / (15 * unitTotal)
 
         # Set the GUI text to the variable for out GPA variable, round to three decimal places
         self.gpaResult.configure(text=str(round(gpaScore, 3)))
 
-        # Set the WAM gui text to the result
-        #self.wamResult.configure(text=str(wamScore))
 
-        self.statsGPA.configure(text=str(gpaScore))
-        self.statsWAM.configure(text=str(wamScore))
+    # Clear all entry text fields, sets GPA back to zero
+    def clearEntryFields(self):
+        # Deletes string in entry from index zero to the last value
+        self.resultEntry1.delete(0, 'end')
+        self.resultEntry2.delete(0, 'end')
+        self.resultEntry3.delete(0, 'end')
+        self.resultEntry4.delete(0, 'end')
+        self.resultEntry5.delete(0, 'end')
+
+        self.gpaResult.configure(text='0')
+
 
     # Method is responsible for saving the students information to a file
     def saveFile(self):
